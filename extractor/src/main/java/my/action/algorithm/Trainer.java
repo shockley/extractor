@@ -27,12 +27,6 @@ public class Trainer {
 	public static Logger logger = Logger.getLogger(Trainer.class);
 	public HibernateService hs = DataSourceFactory.getHibernateInstance();
 	public PathCounterService pcService = PathCounterService.getInstance();
-	/**
-	 * @variable : Seed -- attribute values
-	 * key : attribute name
-	 * value : list of unique values
-	 */
-	private HashMap<String,List<String>> SA = new HashMap<String,List<String>>();
 	public static String BASE_DIR = "d:\\work\\forge.mirror\\";
 	public HTMLHandler tm = new HTMLHandler();
 	/**
@@ -74,12 +68,8 @@ public class Trainer {
 			prepareSite(forge);
 		}
 		pageDirs = dir.list();*/
-		for(Seed s : seeds){
-			Attribute sa = s.getAttribute();
-			String sv = s.getValue();
-			for(Project p : projects){
-				tm.tranverseHTML(p, sv, sa, forge);
-			}
+		for(Project p : projects){
+			tm.tranverseHTML(p, seeds, forge);	
 		}
 		//logger.info(pcService.printMP());
 	}
@@ -123,39 +113,6 @@ public class Trainer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	public void prepareSite(String forge) {
-		Session s = hs.getSession();
-		Transaction tx = s.beginTransaction();
-		String hql1 = "from Project p where p.forge in (from Forge f where f.name = \'"
-				+ forge + "\')";
-		String hql2 = "from Project p where p.forge.name =  \'" + forge + "\'";
-		Query q = s.createQuery(hql1);
-		//q.setMaxResults(50);
-		List<Project> projects = q.list();
-		File forgeDir = new File(BASE_DIR + forge);
-		if (!forgeDir.exists() || !forgeDir.isDirectory()) {
-			forgeDir.mkdir();
-		}
-		for (Project p : projects) {
-			File pf = new File(BASE_DIR + forge + "\\" + p.getName());
-			try {
-				if (!pf.createNewFile())
-					logger.warn("can't over ride" + pf.getAbsolutePath());
-				else {
-					PrintStream out = new PrintStream(new FileOutputStream(pf));
-					out.print(p.getHtml());
-					out.close();
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
-		tx.commit();
-		s.close();
 	}
 	
 	public static void main(String args[]){

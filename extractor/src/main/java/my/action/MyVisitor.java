@@ -4,9 +4,12 @@
  */
 package my.action;
 
+import java.util.List;
+
 import my.action.algorithm.SimMatcher;
 import my.dao.Attribute;
 import my.dao.Forge;
+import my.dao.Seed;
 import my.dao.MatchPath;
 import my.dao.Path;
 import net.trustie.datasource.DataSourceFactory;
@@ -39,64 +42,46 @@ public class MyVisitor implements Visitor {
 	public static Logger logger = Logger.getLogger(MyVisitor.class);
 	public HibernateService hs = DataSourceFactory.getHibernateInstance();
 	public PathCounterService pcService = PathCounterService.getInstance();
-	private String tofind;
-	private Attribute attri;
+	private List<Seed> seeds;
 	private Forge forge;
 	
-	public MyVisitor(String tofind, Attribute attr, Forge forge){
-		this.setAttri(attr);
+	public MyVisitor(List<Seed> seeds, Forge forge){
 		this.setForge(forge);
-		this.setTofind(tofind);
+		this.setSeeds(seeds);
 	}
 
 	public void visit(Text node) {
 		// TODO Auto-generated method stub
-		String s1 = node.getText();
+		String text = node.getText();
 		Session session  = hs.getSession();
 		Transaction tx = session.beginTransaction();
 		tx.begin();
-		if(wm.whetherMatches(s1.toLowerCase(), tofind.toLowerCase())){
-			String pathExp =  node.getPath();
-			Path path;
-			Query q = session.createQuery("from Path p where p.xpath = \'"+pathExp+"\'");
-			if(q.list()==null || q.list().size() != 1){
-				path = new Path();
-				path.setXpath(pathExp);
-				path.setUniqueInPage(false);
-				//session.save(path);
-			}else{
-				path = (Path) q.list().get(0);
+		for(Seed seed : seeds){
+			Attribute attrib = seed.getAttribute();
+			String toFind = seed.getValue();
+			if(wm.whetherMatches(text.toLowerCase(), toFind.toLowerCase())){
+				String pathExp =  node.getPath();
+				Path path;
+				Query q = session.createQuery("from Path p where p.xpath = \'"+pathExp+"\'");
+				if(q.list()==null || q.list().size() != 1){
+					path = new Path();
+					path.setXpath(pathExp);
+					path.setUniqueInPage(false);
+					//session.save(path);
+				}else{
+					path = (Path) q.list().get(0);
+				}
+				MatchPath mp = new MatchPath();
+				mp.setAttribute(attrib);
+				mp.setForge(forge);
+				mp.setPath(path);
+				session.save(mp);
+				//logger.info(s1 + " found at " + path + " " + this);
+				//pcService.addMP(attriName, path);
 			}
-			MatchPath mp = new MatchPath();
-			mp.setAttribute(attri);
-			mp.setForge(forge);
-			mp.setPath(path);
-			session.save(mp);
-			//logger.info(s1 + " found at " + path + " " + this);
-			//pcService.addMP(attriName, path);
 		}
 		tx.commit();
 		session.close();
-	}
-
-	
-	public String getTofind() {
-		return tofind;
-	}
-	public void setTofind(String tofind) {
-		this.tofind = tofind;
-		
-	}
-	
-	public String toString(){
-		String s = "";
-		if(forge != null)
-			s += "FORGE = " + forge;
-		if(attri != null)
-			s += " ATTRIBUTE = " + attri;
-		if(tofind != null)
-			s += " SEED_VALUE = " + tofind;
-		return s;
 	}
 	
 	public void visit(Document document) {}
@@ -109,19 +94,19 @@ public class MyVisitor implements Visitor {
 	public void visit(Namespace namespace) {}
 	public void visit(ProcessingInstruction node) {}
 
-	public void setAttri(Attribute attri) {
-		this.attri = attri;
-	}
-
-	public Attribute getAttri() {
-		return attri;
-	}
-
 	public void setForge(Forge forge) {
 		this.forge = forge;
 	}
 
 	public Forge getForge() {
 		return forge;
+	}
+
+	public void setSeeds(List<Seed> seeds) {
+		this.seeds = seeds;
+	}
+
+	public List<Seed> getSeeds() {
+		return seeds;
 	}
 }

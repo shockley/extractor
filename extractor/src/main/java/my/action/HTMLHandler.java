@@ -8,6 +8,7 @@ import java.util.List;
 import my.dao.Attribute;
 import my.dao.Forge;
 import my.dao.Project;
+import my.dao.Seed;
 
 import org.cyberneko.html.parsers.DOMParser;
 import org.dom4j.Document;
@@ -30,11 +31,10 @@ public class HTMLHandler {
 	/**
 	 * Tranverse Html page of a given project, using MyVisitor
 	 * @param project
-	 * @param tofind
-	 * @param attri
+	 * @param seeds
 	 * @param forge
 	 */
-	public void tranverseHTML(Project project, String tofind, Attribute attri, Forge forge){
+	public void tranverseHTML(Project project, List<Seed> seeds, Forge forge){
 		DOMParser parser = new DOMParser();
 		if(project==null || project.getHtml()==null)
 			return;
@@ -51,7 +51,7 @@ public class HTMLHandler {
 		DOMReader domReader=new DOMReader();
 		Document document=domReader.read(w3cDoc);
 		Element root = document.getRootElement();
-		MyVisitor v = new MyVisitor(tofind, attri, forge);
+		MyVisitor v = new MyVisitor(seeds, forge);
 		for(Iterator<Element> i = root.elementIterator();i.hasNext();){
 			Element el = (Element)i.next();
 			el.accept(v);
