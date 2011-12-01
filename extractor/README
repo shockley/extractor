@@ -1,0 +1,4 @@
+Extractor is a project for handling extracting entity attribute embedded in 
+html web page using a collection of seed values.
+It uses DOM4J and nekohtml to do the DOM parsing, 
+leveraging their xpath functionality.
