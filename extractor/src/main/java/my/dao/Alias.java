@@ -10,13 +10,18 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
 @Entity
-@Table(name = "match_path")
-public class MatchPath {
+@Table(name = "alias")
+public class Alias {
 	@Id @GeneratedValue
-	@Column(name = "mp_id")
-	private Long id;
+	@Column(name = "id")
+	private int id;
 	
+	@Column(name = "value")
+	private String value;
+	
+
 	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name = "forge_id") //necessary
 	@Basic(fetch = FetchType.LAZY)
@@ -27,33 +32,37 @@ public class MatchPath {
 	@Basic(fetch = FetchType.LAZY)
 	private Attribute attribute;
 	
-	@ManyToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name = "path_id") //necessary
-	@Basic(fetch = FetchType.LAZY)
-	private Path path;
-	
-	public Long getId() {
+	public int getId() {
 		return id;
 	}
-	public void setId(Long id) {
+
+	public void setId(int id) {
 		this.id = id;
 	}
-	public void setAttribute(Attribute attribute) {
-		this.attribute = attribute;
+
+	public String getValue() {
+		return value;
 	}
-	public Attribute getAttribute() {
-		return attribute;
+
+	public void setValue(String value) {
+		this.value = value;
 	}
-	public void setPath(Path path) {
-		this.path = path;
+
+	public Forge getForge() {
+		return forge;
 	}
-	public Path getPath() {
-		return path;
-	}
+
 	public void setForge(Forge forge) {
 		this.forge = forge;
 	}
-	public Forge getForge() {
-		return forge;
-	}	
+
+	public Attribute getAttribute() {
+		return attribute;
+	}
+
+	public void setAttribute(Attribute attribute) {
+		this.attribute = attribute;
+	}
+
+
 }

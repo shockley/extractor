@@ -1,8 +1,14 @@
 package my.action;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+
+import my.dao.MatchPath;
+import net.trustie.datasource.DataSourceFactory;
+import net.trustie.datasource.HibernateService;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  * This singleton service calculate all the instance counts
@@ -10,6 +16,7 @@ import java.util.List;
  */
 public class PathCounterService {
 	private static PathCounterService theInstance = null;
+	public HibernateService hs = DataSourceFactory.getHibernateInstance();
 	/**
 	 * key -- aname
 	 * value -- xpathes matched
@@ -18,7 +25,7 @@ public class PathCounterService {
 	 * Deprecated after we use db
 	 */
 	@Deprecated
-	private HashMap<String,HashMap<String,Integer>> MP = new HashMap<String,HashMap<String,Integer>>();
+	private List<MatchPath> MP = new ArrayList<MatchPath>();
 
 	public static PathCounterService getInstance(){
 		if(theInstance==null)
@@ -27,89 +34,23 @@ public class PathCounterService {
 	}
 	
 	/**
-	 * Accumulate suport count while training using hashmap 
-	 * @param aName
-	 * @param xpath
+	 * Accumulate suport count while training using hashmap
 	 */
-	public void addMP(String aName, String xpath){
-		HashMap<String,Integer> pathes = MP.get(aName);
-		if(pathes == null){
-			pathes = new HashMap<String,Integer>();
-		}
-		Integer support = pathes.get(xpath);
-		if(pathes.get(xpath)==null){
-			pathes.put(xpath, 1);
-		}else{
-			//the old value is replaced through put method
-			pathes.put(xpath, support+1);
-		}
-		//the old value is replaced through put method
-		MP.put(aName, pathes);
+	public void addMP(MatchPath mp){
+		MP.add(mp);
 	}
 	
-	public HashMap<String,HashMap<String,Integer>> getMP() {
+	public List<MatchPath> getMP() {
 		return MP;
 	}
-	
-	/**
-	 * Get the support count
-	 * @param aName
-	 * @param xpath
-	 * @return 0 if no such aName or no such path is found under that aName
-	 */
-	public int getSupport(String aName, String xpath) {
-		int s = 0;
-		HashMap<String,Integer> paths = MP.get(aName);
-		if(paths!=null){
-			Integer support = paths.get(xpath);
-			if(support!=null)
-				s = support;
+
+	public void flushToDb(){
+		Session s = hs.getSession();
+		for(MatchPath mp: MP){
+			Transaction tx = s.beginTransaction();
+			s.save(mp);
+			tx.commit();
 		}
-		return s;
-	}
-	
-	/**
-	 * Get the first one of the pathes with max-support
-	 * @param aName : name of the attribute
-	 * @return null if no paths for that attribute
-	 */
-	public String getMaxSupport(String aName){
-		int max = 0;
-		String maxPath = null;
-		HashMap<String,Integer> paths= MP.get(aName);
-		if(paths!=null){
-			for(String p : paths.keySet()){
-				int support = paths.get(p);
-				if(support>max){
-					max = support;
-					maxPath = p;
-				} 
-			}
-		}
-		return maxPath;
-	}
-	
-	public String printMP(){
-		String s = "";
-		for(String a : MP.keySet()){
-			HashMap<String,Integer> paths = MP.get(a);
-			for(String p : paths.keySet()){
-				Integer i = paths.get(p);
-				s += "ATTRI -- "+a+"; PATH --"+p+"; SUPPORT --"+i+'\n';
-			}
-		}
-		return s;
-	}
-	
-	public String printHITs(){
-		String s = "";
-		for(String a : MP.keySet()){
-			HashMap<String,Integer> paths = MP.get(a);
-			for(String p : paths.keySet()){
-				Integer i = paths.get(p);
-				s += "ATTRI -- "+a+"; PATH --"+p+"; SUPPORT --"+i+'\n';
-			}
-		}
-		return s;
+		s.close();
 	}
 }

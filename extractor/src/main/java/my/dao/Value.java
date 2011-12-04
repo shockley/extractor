@@ -30,6 +30,9 @@ public class Value {
 	@JoinColumn(name = "proj_id") //necessary
 	@Basic(fetch = FetchType.LAZY)
 	private Project project;
+	
+	@Column(name = "truth")
+	private boolean truth;
 
 	public void setAttribute(Attribute attribute) {
 		this.attribute = attribute;
@@ -61,6 +64,14 @@ public class Value {
 
 	public Project getProject() {
 		return project;
+	}
+
+	public void setTruth(boolean truth) {
+		this.truth = truth;
+	}
+
+	public boolean isTruth() {
+		return truth;
 	}
 
 }

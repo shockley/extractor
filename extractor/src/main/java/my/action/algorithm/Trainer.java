@@ -2,22 +2,19 @@ package my.action.algorithm;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import my.action.PathCounterService;
+
 import my.action.HTMLHandler;
+import my.action.PathCounterService;
 import my.dao.Attribute;
 import my.dao.Forge;
 import my.dao.Project;
 import my.dao.Seed;
 import net.trustie.datasource.DataSourceFactory;
 import net.trustie.datasource.HibernateService;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -68,52 +65,14 @@ public class Trainer {
 			prepareSite(forge);
 		}
 		pageDirs = dir.list();*/
-		for(Project p : projects){
-			tm.tranverseHTML(p, seeds, forge);	
+		for(int i=0;i<projects.size();i++){
+			logger.info("We handled "+ i+" projects");
+			tm.tranverseHTML(projects.get(i), seeds, forge);	
 		}
 		//logger.info(pcService.printMP());
 	}
 	
-	/**
-	 * prepare the seeds: SA
-	 */
-	private void init() {
-		try {
-			File file = new File("d:\\work\\forge.mirror\\seed");
-			String[] names = file.list();
-			Session session = hs.getSession();
-			for (String name : names) {
-				Transaction tx = session.beginTransaction();
-				Attribute att;
-				String hql = "from Attribute a where a.name = \'"+name+"\'";
-				Query q = session.createQuery(hql);
-				List list = q.list();
-				//if a new attribute found, save it
-				if(list==null || list.size()<1){
-					att = new Attribute();
-					att.setName(name);
-				}else{
-					att = (Attribute) list.get(0);
-				}
-				
-				BufferedReader reader = new BufferedReader(
-						new FileReader("d:\\work\\forge.mirror\\seed\\" + name));
-				String value = null;
-				//for each seed value
-				while((value = reader.readLine())!=null){			
-					Seed seed = new Seed();
-					seed.setAttribute(att);
-					seed.setValue(value);
-					//expect cascade save
-					session.save(seed);				
-				}
-				tx.commit();
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	
 	
 	public static void main(String args[]){
 		Trainer t = new Trainer();
@@ -123,7 +82,6 @@ public class Trainer {
 		Forge forge = (Forge) q.list().get(0);
 		tx.commit();
 		s.close();
-		
 		t.findMaxSupport(forge);
 	}
 }

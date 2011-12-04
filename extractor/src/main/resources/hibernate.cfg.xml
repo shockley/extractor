@@ -33,6 +33,7 @@
 	<mapping class="my.dao.Project" ></mapping>
 	<mapping class="my.dao.Seed" ></mapping>
 	<mapping class="my.dao.Value" ></mapping>
-	
+	<mapping class="my.dao.Alias" ></mapping>
+	<mapping class="my.dao.RelativePath" ></mapping>
   </session-factory>
 </hibernate-configuration>

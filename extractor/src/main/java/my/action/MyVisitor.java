@@ -54,18 +54,18 @@ public class MyVisitor implements Visitor {
 		// TODO Auto-generated method stub
 		String text = node.getText();
 		Session session  = hs.getSession();
-		Transaction tx = session.beginTransaction();
-		tx.begin();
+		
 		for(Seed seed : seeds){
 			Attribute attrib = seed.getAttribute();
 			String toFind = seed.getValue();
 			if(wm.whetherMatches(text.toLowerCase(), toFind.toLowerCase())){
+				Transaction tx = session.beginTransaction();
 				String pathExp =  node.getPath();
-				Path path;
+				Path path = null;
 				Query q = session.createQuery("from Path p where p.xpath = \'"+pathExp+"\'");
 				if(q.list()==null || q.list().size() != 1){
 					path = new Path();
-					path.setXpath(pathExp);
+					path.setXpath(pathExp.replace("'", "\'"));
 					path.setUniqueInPage(false);
 					//session.save(path);
 				}else{
@@ -76,11 +76,10 @@ public class MyVisitor implements Visitor {
 				mp.setForge(forge);
 				mp.setPath(path);
 				session.save(mp);
-				//logger.info(s1 + " found at " + path + " " + this);
-				//pcService.addMP(attriName, path);
+				tx.commit();
 			}
 		}
-		tx.commit();
+		
 		session.close();
 	}
 	

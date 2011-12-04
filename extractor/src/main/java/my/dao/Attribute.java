@@ -11,7 +11,7 @@ import javax.persistence.Table;
 @Table(name = "attribute")
 public class Attribute {
 	@Id @GeneratedValue
-	@Column(name = "attribute_id")
+	@Column(name = "id")
 	private Long id;
 
 	@Column(name = "attribute_name")
