@@ -25,11 +25,8 @@ public class TestVisitor implements Visitor{
 	}
 	public static Logger logger = Logger.getLogger(TestVisitor.class);
 	private String tomatch = null;
-	
 	public void visit(Document document) {}
-
 	public void visit(DocumentType documentType) {}
-
 	public void visit(Element node) {
 		// TODO Auto-generated method stub
 		if(node.getText().equals(tomatch)){

@@ -32,7 +32,13 @@ public class HibernateService {
 		return sessionFactory;
 	}
 	
+	/**
+	 * get the currently opened session, otherwise open another one
+	 * @return
+	 */
 	public Session getSession() {
+		if(sessionFactory.getCurrentSession().isOpen())
+			return sessionFactory.getCurrentSession();
 		return sessionFactory.openSession();
 	}
 

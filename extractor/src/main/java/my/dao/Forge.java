@@ -40,6 +40,10 @@ public class Forge {
 	//like @JoinTable or @JoinColumn
 	private List<Project> projects;
 	
+	@OneToMany(mappedBy = "forge")
+	@Basic(fetch = FetchType.LAZY)
+	private List<Alias> aliases;
+	
 	public Long getId() {
 		return id;
 	}
@@ -103,5 +107,13 @@ public class Forge {
 			return 0;
 		else
 			return name.hashCode();
+	}
+
+	public void setAliases(List<Alias> aliases) {
+		this.aliases = aliases;
+	}
+
+	public List<Alias> getAliases() {
+		return aliases;
 	}
 }

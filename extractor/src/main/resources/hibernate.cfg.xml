@@ -17,6 +17,7 @@
     </property>
     <!-- Use the C3P0 connection pool provider -->
     <!-- Add by Shockley -->
+    
     <property name="hibernate.c3p0.min_size">5</property>
     <property name="hibernate.c3p0.max_size">20</property>
     <property name="hibernate.c3p0.timeout">300</property>
@@ -26,14 +27,19 @@
     <property name="show_sql">false</property>
     <property name="format_sql">true</property>
 	
+	<!-- current_session_context_class -->
+	<property name="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</property>
+	
 	<mapping class="my.dao.Attribute" ></mapping>
 	<mapping class="my.dao.Forge" ></mapping>
 	<mapping class="my.dao.MatchPath" ></mapping>
+	<mapping class="my.dao.MaxMatchPath" ></mapping>
 	<mapping class="my.dao.Path" ></mapping>
 	<mapping class="my.dao.Project" ></mapping>
 	<mapping class="my.dao.Seed" ></mapping>
 	<mapping class="my.dao.Value" ></mapping>
 	<mapping class="my.dao.Alias" ></mapping>
 	<mapping class="my.dao.RelativePath" ></mapping>
+	<mapping class="my.dao.DistinctRP" ></mapping>
   </session-factory>
 </hibernate-configuration>

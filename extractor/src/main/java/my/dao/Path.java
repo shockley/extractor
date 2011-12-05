@@ -11,13 +11,13 @@ import javax.persistence.Table;
 @Table(name = "path")
 public class Path {
 	@Id @GeneratedValue
-	@Column(name = "path_id")
+	@Column(name = "id")
 	private int id;
 	
-	@Column(name = "xpath")
+	@Column(name = "path")
 	private String xpath;
 	
-	@Column(name = "unique_in_page")
+	@Column(name = "unique")
 	private boolean uniqueInPage;
 
 	public void setUniqueInPage(boolean uniqueInPage) {
@@ -41,6 +41,18 @@ public class Path {
 	}
 
 	public int getId() {
+		return id;
+	}
+	
+	public boolean equals(Object o){
+		if(o instanceof Path){
+			Path po = (Path) o;
+			return this.hashCode() == po.hashCode();
+		}
+		return false;
+	}
+	
+	public int hashCode(){
 		return id;
 	}
 }

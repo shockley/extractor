@@ -35,4 +35,11 @@ public class AppTest
     {
         assertTrue( true );
     }
+    
+    public static void main(String [] args){
+    	String s ="s";
+    	System.out.println(s.substring(0,0));
+    	if(s.substring(0,0).equals(""))
+    		System.out.println(s.substring(0,0).length());
+    }
 }

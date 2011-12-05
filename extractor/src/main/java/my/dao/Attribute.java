@@ -1,9 +1,14 @@
 package my.dao;
 
+import java.util.List;
+
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 
@@ -16,6 +21,11 @@ public class Attribute {
 
 	@Column(name = "attribute_name")
 	private String name;
+	
+	@OneToMany(mappedBy = "attribute")
+	@Basic(fetch = FetchType.LAZY)
+	private List<Alias> aliases;
+	
 	public Long getId() {
 		return id;
 	}
@@ -32,5 +42,11 @@ public class Attribute {
 		if(name==null)
 			return "";
 		return name.toString(); 
+	}
+	public void setAliases(List<Alias> aliases) {
+		this.aliases = aliases;
+	}
+	public List<Alias> getAliases() {
+		return aliases;
 	}
 }

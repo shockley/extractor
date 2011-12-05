@@ -94,7 +94,7 @@ public class SimMatcher{
 		}
 		return toReturn;
 	}
-	public static double THRESHOLD = 0.5;
+	public static double THRESHOLD = 0.9;
 	public int gramLength = 3;
 	
 	public int getGramLength() {
