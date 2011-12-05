@@ -283,12 +283,15 @@ public class HTMLHandler {
 	 * 
 	 * @param hits
 	 * @param rp
-	 * @return
+	 * @return null if no rp
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Node> siftHits(List<Node> hits, Alias alias) {
 		List<Node> newHits = new ArrayList<Node>();
 		DistinctRP rp = alias.getDrp();
+		if(rp==null){
+			return null;
+		}
 		out: for (Node hit : hits) {
 			String aliasName = alias.getValue();
 			String a2v = rp.getAncestor2value();
@@ -318,7 +321,7 @@ public class HTMLHandler {
 							+ alias.getValue());
 					continue;
 				}
-				if (name.getText().equals(aliasName)){
+				if (name.getText().trim().equals(aliasName)){
 					// finally we have a winner!
 					logger.info("Save the Winner:" + hit.getText()
 							+ ", for alias: " + alias.getValue());

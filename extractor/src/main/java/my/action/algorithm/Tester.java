@@ -61,7 +61,7 @@ public class Tester {
 			}
 		}
 		tx.commit();
-		session.close();
+		//session.close();
 	}
 	
 	public  static void main(String [] args){

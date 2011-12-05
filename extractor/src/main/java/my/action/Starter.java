@@ -169,7 +169,7 @@ public class Starter{
 			/**/
 		}
 		tx.commit();
-		session.close();
+		//session.close();
 	}
 	/**
 	 * prepare the seeds: SA
@@ -214,7 +214,7 @@ public class Starter{
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Starter s = new Starter();
-		s.prepareSeeds();
+		s.prepareRP();
 		
 	}
 }

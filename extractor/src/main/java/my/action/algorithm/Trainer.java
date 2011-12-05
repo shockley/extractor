@@ -60,7 +60,7 @@ public class Trainer {
 		Trainer t = new Trainer();
 		Session s = t.hs.getSession();
 		Transaction tx = s.beginTransaction();
-		Query q = s.createQuery("from Forge f where f.name = \'rubyforge\'");
+		Query q = s.createQuery("from Forge f where f.name = \'sourceforge\'");
 		Forge forge = (Forge) q.list().get(0);
 		t.findMaxSupport(forge, s);
 		tx.commit();
