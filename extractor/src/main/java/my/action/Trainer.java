@@ -1,8 +1,7 @@
-package my.action.algorithm;
+package my.action;
 
 import java.util.List;
 
-import my.action.HTMLHandler;
 import my.dao.Forge;
 import my.dao.Project;
 import my.dao.Seed;

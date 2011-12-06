@@ -213,8 +213,11 @@ public class Starter{
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Starter s = new Starter();
-		s.prepareRP();
+		Starter starter = new Starter();
+		Tester tester = new Tester();
+		Trainer trainer = new Trainer();
+		starter.prepareSeeds();
+		starter.prepareRP();
 		
 	}
 }
