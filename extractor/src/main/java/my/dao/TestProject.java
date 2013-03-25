@@ -12,8 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "projects")
-public class Project {
+@Table(name = "projects_test")
+public class TestProject {
 	@Id @GeneratedValue
 	@Column(name = "proj_id")
 	private Long id;
@@ -25,10 +25,10 @@ public class Project {
 	
 	@Column(name = "proj_short_name")	
 	private String name;
-
 	
 	@Column(name = "html")
 	private String html;
+	
 	
 	public void setName(String name) {
 		this.name = name;
@@ -37,7 +37,7 @@ public class Project {
 	public String getName() {
 		return name;
 	}
-
+	
 	public void setHtml(String html) {
 		this.html = html;
 	}
@@ -45,6 +45,7 @@ public class Project {
 	public String getHtml() {
 		return html;
 	}
+
 
 
 	public void setId(Long id) {
@@ -64,8 +65,8 @@ public class Project {
 	}
 
 	public boolean equals(Object o){
-		if(o==null || !(o instanceof Project)) return false;
-		Project tmp = (Project) o;
+		if(o==null || !(o instanceof TestProject)) return false;
+		TestProject tmp = (TestProject) o;
 		return this.id.equals(tmp.id);
 	}
 	

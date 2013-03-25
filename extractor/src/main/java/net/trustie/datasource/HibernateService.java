@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
@@ -22,7 +21,6 @@ public class HibernateService {
 	public HibernateService() {
 		sessionFactory = configuration.configure().buildSessionFactory();
 	}
-	private Logger logger = Logger.getLogger(HibernateService.class);
 	private SessionFactory sessionFactory;
 	// if trying to do the class-table mapping using the hibernate.cfg.xml
 	// we need AnnotationConfiguration()
@@ -186,6 +184,7 @@ public class HibernateService {
 	 * @return
 	 * @throws QueryException
 	 */
+	@SuppressWarnings("unchecked")
 	public List<?> doHQL(String hql, Map<String, Object> params,
 			Map<String, Collection> collectionParams, boolean lockForUpdate,
 			int start, int limit) throws QueryException {

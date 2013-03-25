@@ -32,14 +32,14 @@
 	
 	<mapping class="my.dao.Attribute" ></mapping>
 	<mapping class="my.dao.Forge" ></mapping>
-	<mapping class="my.dao.MatchPath" ></mapping>
+	<mapping class="my.dao.TestProject" ></mapping>
 	<mapping class="my.dao.MaxMatchPath" ></mapping>
-	<mapping class="my.dao.Path" ></mapping>
 	<mapping class="my.dao.Project" ></mapping>
 	<mapping class="my.dao.Seed" ></mapping>
 	<mapping class="my.dao.Value" ></mapping>
 	<mapping class="my.dao.Alias" ></mapping>
 	<mapping class="my.dao.RelativePath" ></mapping>
 	<mapping class="my.dao.DistinctRP" ></mapping>
+	<mapping class="my.dao.SfSummary" ></mapping>
   </session-factory>
 </hibernate-configuration>

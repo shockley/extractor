@@ -22,10 +22,9 @@ public class MaxMatchPath {
 	@Basic(fetch = FetchType.LAZY)
 	private Alias alias;
 	
-	@ManyToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name = "path_id") //necessary
-	@Basic(fetch = FetchType.LAZY)
-	private Path path;
+	
+	@Column(name = "path") //necessary
+	private String path;
 	
 	@Column(name = "support")
 	private int support;
@@ -37,12 +36,6 @@ public class MaxMatchPath {
 		this.id = id;
 	}
 	
-	public void setPath(Path path) {
-		this.path = path;
-	}
-	public Path getPath() {
-		return path;
-	}
 	public void setAlias(Alias alias) {
 		this.alias = alias;
 	}
@@ -54,6 +47,12 @@ public class MaxMatchPath {
 	}
 	public int getSupport() {
 		return support;
+	}
+	public String getPath() {
+		return path;
+	}
+	public void setPath(String path) {
+		this.path = path;
 	}
 	public boolean equals(Object o){
 		if(o instanceof MaxMatchPath){

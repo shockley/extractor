@@ -27,6 +27,11 @@ public class Value {
 	private String value;
 	
 	@ManyToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name = "test_proj_id") //necessary
+	@Basic(fetch = FetchType.LAZY)
+	private TestProject testproject;
+	
+	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name = "proj_id") //necessary
 	@Basic(fetch = FetchType.LAZY)
 	private Project project;
@@ -58,20 +63,28 @@ public class Value {
 		return value;
 	}
 
-	public void setProject(Project project) {
-		this.project = project;
-	}
-
-	public Project getProject() {
-		return project;
-	}
-
 	public void setTruth(boolean truth) {
 		this.truth = truth;
 	}
 
 	public boolean isTruth() {
 		return truth;
+	}
+
+	public void setTestproject(TestProject tproject) {
+		this.testproject = tproject;
+	}
+
+	public TestProject getTestproject() {
+		return testproject;
+	}
+
+	public void setProject(Project project) {
+		this.project = project;
+	}
+
+	public Project getProject() {
+		return project;
 	}
 
 }

@@ -42,6 +42,13 @@ public class Forge {
 	
 	@OneToMany(mappedBy = "forge")
 	@Basic(fetch = FetchType.LAZY)
+	//the mapped by is necessary unless it's unidirectional
+	//Associations marked as mappedBy must not define database mappings 
+	//like @JoinTable or @JoinColumn
+	private List<TestProject> testprojects;
+	
+	@OneToMany(mappedBy = "forge")
+	@Basic(fetch = FetchType.LAZY)
 	private List<Alias> aliases;
 	
 	public Long getId() {
@@ -115,5 +122,13 @@ public class Forge {
 
 	public List<Alias> getAliases() {
 		return aliases;
+	}
+
+	public void setTestprojects(List<TestProject> testprojects) {
+		this.testprojects = testprojects;
+	}
+
+	public List<TestProject> getTestprojects() {
+		return testprojects;
 	}
 }

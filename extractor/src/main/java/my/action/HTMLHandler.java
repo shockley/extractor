@@ -7,15 +7,12 @@ import java.util.List;
 
 import my.action.algorithm.SimMatcher;
 import my.dao.Alias;
-import my.dao.Attribute;
 import my.dao.DistinctRP;
-import my.dao.Forge;
-import my.dao.MatchPath;
 import my.dao.MaxMatchPath;
-import my.dao.Path;
 import my.dao.Project;
 import my.dao.RelativePath;
 import my.dao.Seed;
+import my.dao.TestProject;
 import net.trustie.datasource.DataSourceFactory;
 import net.trustie.datasource.HibernateService;
 
@@ -33,10 +30,8 @@ import org.dom4j.ProcessingInstruction;
 import org.dom4j.Text;
 import org.dom4j.Visitor;
 import org.dom4j.io.DOMReader;
-import org.dom4j.tree.DefaultText;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -51,10 +46,6 @@ import org.xml.sax.SAXException;
 public class HTMLHandler {
 
 	public static Logger logger = Logger.getLogger(HTMLHandler.class);
-	/**
-	 * mps : local variablr accessed ,modified, maintained by MyVisitor
-	 */
-	private List<MatchPath> mps = new ArrayList<MatchPath>();
 	public HibernateService hs = DataSourceFactory.getHibernateInstance();
 
 	/**
@@ -70,22 +61,20 @@ public class HTMLHandler {
 
 		private List<Seed> seeds;
 		private Project project;
-		private Session session;
-		public TrainingVisitor(List<Seed> seeds, Project p, Session s) {
+		public TrainingVisitor(List<Seed> seeds, Project p) {
 			this.project = p;
 			this.seeds = seeds;
-			session = s;
 		}
 
 		public void visit(Text node) {
 			// TODO Auto-generated method stub
 			String text = node.getText();
 			for (Seed seed : seeds) {
-				Attribute attrib = seed.getAttribute();
 				String toFind = seed.getValue();
 				if (wm.whetherMatches(text.toLowerCase().trim(), toFind
 						.toLowerCase().trim())) {
-					logger.info("winner!" + text + " v.s. "+toFind);
+					Session session = hs.getSession();
+					session.beginTransaction();
 					String pathExp = node.getPath();
 					Query q2 = session
 					.createSQLQuery("insert into new_mp (seed_id, project_id, path, value, tofind) VALUES (:seedid, :projectid, :path, :value, :tofind)");
@@ -95,43 +84,7 @@ public class HTMLHandler {
 					q2.setParameter("value", text);
 					q2.setParameter("tofind", toFind);
 					q2.executeUpdate();
-					/*String pathExpToSearch = pathExp.replace("'", "''");
-					Path path = null;
-					Query q2 = session
-							.createQuery("from Alias a where a.forge =:f and a.attribute =:attr");
-					q2.setParameter("f", project.getForge());
-					q2.setParameter("attr", attrib);
-					List<Alias> aliases = q2.list();
-					if (aliases == null || aliases.size() != 1) {
-						logger.info("unrecognized seed");
-						continue;
-						// session.save(path);
-					}
-					Query q = session
-							.createQuery("from Path p where p.xpath = \'"
-									+ pathExpToSearch + "\'");
-					if (q.list() == null || q.list().size() != 1) {
-						path = new Path();
-						path.setXpath(pathExp);
-						path.setUniqueInPage(false);
-						// session.save(path);
-					} else {
-						path = (Path) q.list().get(0);
-					}
-
-					// 时间换空间，但是空间小了可以不存数据库，进而又换了更多的时间
-					MatchPath mp = new MatchPath();
-					mp.setAlias(aliases.get(0));
-					mp.setPath(path);
-					if (mps.contains(mp)) {
-						int s = mps.get(mps.indexOf(mp)).getSupport();
-						mp.setSupport(s + 1);
-						mps.remove(mp);
-						mps.add(mp);
-					} else {
-						mp.setSupport(1);
-						mps.add(mp);
-					}*/
+					session.close();
 				}
 			}			
 		}
@@ -172,15 +125,15 @@ public class HTMLHandler {
 	 *            : act as keyword
 	 * @param forge
 	 */
-	public void searchCloseTerms(Project project, List<Seed> seeds, Session session) {
+	public void searchCloseTerms(Project project, List<Seed> seeds) {
 		DOMParser parser = new DOMParser();
-		if (project == null || project.getHtml() == null){
+		String html = null;
+		if (project == null || (html = project.getHtml()) == null){
 			logger.info("no html, for project "+project.getName());
 			return;
 		}
-			
 		try {
-			parser.parse(new InputSource(new StringReader(project.getHtml())));
+			parser.parse(new InputSource(new StringReader(html)));
 		} catch (SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -192,12 +145,8 @@ public class HTMLHandler {
 		DOMReader domReader = new DOMReader();
 		Document document = domReader.read(w3cDoc);
 		Element root = document.getRootElement();
-		TrainingVisitor v = new TrainingVisitor(seeds, project ,session);
+		TrainingVisitor v = new TrainingVisitor(seeds, project);
 		root.accept(v);
-		for (MatchPath mp : mps) {
-			//session.clear();
-			session.save(mp);
-		}
 	}
 
 	/**
@@ -253,11 +202,14 @@ public class HTMLHandler {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Node> getCandidateValues(Project project, Alias alias) {
+	public List<Node> getCandidateValues(TestProject project, Alias alias) {
 		List<Node> hits = new ArrayList<Node>();
 		DOMParser parser = new DOMParser();
 		try {
-			parser.parse(new InputSource(new StringReader(project.getHtml())));
+			String html = project.getHtml();
+			if(html==null)
+				return null;
+			parser.parse(new InputSource(new StringReader(html)));
 		} catch (SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -273,7 +225,7 @@ public class HTMLHandler {
 			logger.info("No mp found for the alias");
 			return null;
 		}
-		hits = document.selectNodes(mp.getPath().getXpath());
+		hits = document.selectNodes(mp.getPath());
 		return hits;
 	}
 
@@ -302,29 +254,29 @@ public class HTMLHandler {
 				// climbing up the tree
 				ancestor = ancestor.getParent();
 				if (ancestor == null) {
-					logger.info("No ancestor found for hit:" + hit.getText()
-							+ ", for alias: " + alias.getValue());
+					/*logger.info("No ancestor found for hit:" + hit.getText()
+							+ ", for alias: " + alias.getValue());*/
 					continue out;
 				}
 			}
 
 			List<Node> names = ancestor.selectNodes(a2n);
 			if (names == null || names.size() == 0) {
-				logger.info("No name found for hit:" + hit.getText()
-						+ ", for alias: " + alias.getValue());
+				/*logger.info("No name found for hit:" + hit.getText()
+						+ ", for alias: " + alias.getValue());*/
 				continue;
 			}
 			for (Node name : names) {
 				if (name.getText() == null) {
-					logger.info("Impossible:null name node! for hit:"
+					/*logger.info("Impossible:null name node! for hit:"
 							+ hit.getText() + ", for alias: "
-							+ alias.getValue());
+							+ alias.getValue());*/
 					continue;
 				}
 				if (name.getText().trim().equals(aliasName)){
 					// finally we have a winner!
-					logger.info("Save the Winner:" + hit.getText()
-							+ ", for alias: " + alias.getValue());
+					/*logger.info("Save the Winner:" + hit.getText()
+							+ ", for alias: " + alias.getValue());*/
 					newHits.add(hit);
 				}
 			}
@@ -333,25 +285,7 @@ public class HTMLHandler {
 		return newHits;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static void main(String args[]) {
-		DOMParser parser = new DOMParser();
-		try {
-			parser.parse("D:\\work\\forge.mirror\\from.local.db\\ow2\\accord");
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		org.w3c.dom.Document w3cDoc = parser.getDocument();
-		DOMReader domReader = new DOMReader();
-		Document document = domReader.read(w3cDoc);
-		String xpath = "/HTML/BODY/TABLE/TBODY/TR/TD/TABLE/TBODY/TR/TD/TABLE/TBODY/TR/TD/UL/LI/text()";
-		List<DefaultText> txts = document.selectNodes(xpath);
-		for (DefaultText n : txts) {
-			logger.info(n.getText());
-		}
+		
 	}
 }
